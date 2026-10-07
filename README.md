@@ -170,6 +170,19 @@ npm run dev
 
 **Requirements:** Node.js 20+, Git, a code editor (we recommend VS Code with the ESLint, Prettier, and Tailwind CSS IntelliSense extensions).
 
+New here? Read the full [Getting Started guide](docs/getting-started.md).
+
+---
+
+## Documentation
+
+| Doc | What it covers |
+|-----|----------------|
+| [Getting Started](docs/getting-started.md) | Installing tools, cloning the repo, running a lesson, troubleshooting |
+| [Contributing](CONTRIBUTING.md) | Branch names, commit style, code style, how to review a friend's pull request |
+| [Architecture](docs/architecture.md) | How we structure React apps and why |
+| [Lesson 01: Setup](lessons/01-setup/README.md) | Start here |
+
 ---
 
 ## How to use this repo with friends
