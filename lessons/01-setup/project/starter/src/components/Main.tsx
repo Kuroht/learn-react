@@ -6,9 +6,9 @@
             <p>Hello my name is Nathan, i am a fullstack web developer.</p>
 
             <ul>
-            {ideas.map((idea) => (
-                <li key={idea}>{idea}</li>
-            ))}
+                {ideas.map((idea) => (
+                    <li key={idea}>{idea}</li>
+                ))}
             </ul>
        </>
      );

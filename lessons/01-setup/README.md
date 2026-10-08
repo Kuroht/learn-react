@@ -6,6 +6,9 @@
 
 **You will need:** a computer, an internet connection, and a GitHub account.
 
+> **Last verified:** October 2026, with Node 24, npm 11, and Vite's `react-ts` template.
+> Tools change quickly. If a command here fails or looks different, read [Tools change](#tools-change-check-the-official-docs) below.
+
 ---
 
 ## What you will learn
@@ -150,6 +153,33 @@ git push -u origin yourname/lesson-01
 ```
 
 Then open a pull request on GitHub and ask a friend to review it.
+
+---
+
+## Tools change: check the official docs
+
+The commands in this lesson were correct when we last verified them, but the way to start a React project has already changed over the years (Create React App, for example, is deprecated and no longer recommended). In a year or two, parts of Section 3 may be out of date.
+
+**Before you create a project, always check the official page:**
+
+[react.dev/learn/installation](https://react.dev/learn/installation)
+
+It explains how the React team currently recommends starting a new app. As of our last check, it offers three routes:
+
+1. **Use a framework** (recommended for production apps)
+2. **Build from scratch**, if a framework isn't a good fit or you want to learn the basics
+3. **Add React to an existing project**
+
+We use Vite in this repo because it is a simple way to learn React itself without framework features getting in the way. If the official page now says something different, follow it and tell the group so we can update the lessons.
+
+**If a command fails or the prompts look different:**
+
+1. Read the whole error message. It usually says what is wrong.
+2. Check the official page above for the current instructions.
+3. Compare your Node version with the one in the "Last verified" note (`node --version`).
+4. Ask the group, and paste the full error rather than describing it.
+
+**Keeping lessons fresh:** whenever someone re-checks a lesson and it still works, update its "Last verified" line. If something changed, fix the lesson in a pull request.
 
 ---
 

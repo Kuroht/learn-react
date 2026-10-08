@@ -20,7 +20,7 @@ npm install
 npm run dev
 ```
 
-If the `starter` folder is empty, create it first:
+If the `starter` folder is empty, create it first. Tools change over time, so check [react.dev/learn/installation](https://react.dev/learn/installation) for the current way to start a project. These commands were last verified in October 2026:
 
 ```bash
 cd lessons/01-setup/project
