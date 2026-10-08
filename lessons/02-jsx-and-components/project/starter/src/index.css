@@ -1,0 +1,5 @@
+.page { max-width: 40rem; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
+.box { padding: 1rem; background: #eef; }
+.badge { display: inline-block; margin-right: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 999px; background: #ddd; }
+.badge.highlighted { background: gold; font-weight: bold; }
+.card { margin: 1rem 0; padding: 1rem; border: 1px solid #ccc; border-radius: 0.5rem; }
