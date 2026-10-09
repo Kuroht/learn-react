@@ -30,6 +30,7 @@ No prior React or TypeScript experience needed.
 | **Frameworks** | Next.js (App Router), intro to server components |
 | **Architecture** | Feature-based folders, separation of concerns, reusable component design, naming conventions |
 | **Shipping** | CI with GitHub Actions, deploying to Vercel / Netlify |
+| **Security (optional)** | OWASP Top 10, XSS prevention, secrets and tokens, dependency safety, beginner pentesting on your own apps |
 
 ---
 
@@ -84,6 +85,13 @@ Each module lives in its own folder under `/lessons`. Work through them in order
 | 22 | Next.js basics: App Router, server vs client components | Blog migrated to Next.js |
 | 23 | Authentication basics | Protected dashboard |
 | 24 | CI/CD and deployment | Deploy your favorite project with a GitHub Actions pipeline |
+
+### Optional bonus modules
+Not required, but great once you've finished Module 4 or later.
+
+| # | Lesson | Project |
+|---|--------|---------|
+| B1 | Web security for React: OWASP Top 10:2025, XSS, secrets, dependencies, and beginner pentesting | Break it, then fix it: attack your own intentionally vulnerable app and write up the findings |
 
 ### Final project
 Pick an idea (or choose from our list), plan it together, and build it as a team using pull requests and code review.
