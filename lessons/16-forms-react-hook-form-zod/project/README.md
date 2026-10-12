@@ -64,7 +64,7 @@ export const signupSchema = z.object({ ...accountSchema.shape, ...profileSchema.
 export type SignupValues = z.infer<typeof signupSchema>;
 ```
 
-(Note: after `.refine`, a schema is no longer a plain object schema in some versions. Keep the cross-field rule on the combined schema if `.shape` isn't available, and check the Zod docs.)
+(Note: spreading `.shape` copies the **fields only**, not the refinements. In Zod 4, `accountSchema.refine(...)` still has a `.shape`, but the password-match rule won't come along when you spread it. Add the cross-field `.refine` to the **combined** `signupSchema` too, and keep it on `accountSchema` for per-step validation. In Zod 3, `.refine` returned a different schema type with no `.shape` at all.)
 
 Rules:
 

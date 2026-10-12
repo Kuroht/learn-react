@@ -23,13 +23,14 @@ No prior React or TypeScript experience needed.
 | **React** | Components, props, state, hooks, effects, context, reducers, custom hooks, performance, error boundaries |
 | **TypeScript** | Typing props and state, generics, utility types, typing hooks and API responses |
 | **Styling** | Tailwind CSS, responsive design, dark mode, component variants, accessible UI |
-| **Tooling** | Vite, ESLint, Prettier, Git workflow, environment variables |
+| **Tooling** | Vite, Oxlint / ESLint, Prettier, Git workflow, environment variables |
 | **Data** | `fetch`, TanStack Query, REST APIs, forms with React Hook Form + Zod |
 | **Routing and state** | React Router, Zustand |
 | **Testing** | Vitest, React Testing Library, Playwright (intro) |
-| **Frameworks** | Next.js (App Router), intro to server components |
+| **Frameworks** | Next.js (App Router), server components, caching; React Router framework mode (optional) |
 | **Architecture** | Feature-based folders, separation of concerns, reusable component design, naming conventions |
 | **Shipping** | CI with GitHub Actions, deploying to Vercel / Netlify |
+| **Beyond the web (optional)** | Mobile apps with Expo and React Native, desktop apps with Electron |
 | **Security (optional)** | OWASP Top 10, XSS prevention, secrets and tokens, dependency safety, beginner pentesting on your own apps |
 
 ---
@@ -85,6 +86,15 @@ Each module lives in its own folder under `/lessons`. Work through them in order
 | 22 | Next.js basics: App Router, server vs client components | Blog migrated to Next.js |
 | 23 | Authentication basics | Protected dashboard |
 | 24 | CI/CD and deployment | Deploy your favorite project with a GitHub Actions pipeline |
+
+### Module 7 (optional): Beyond the browser
+Not required. Take what you learned to full-stack routing, phones, and desktops. Do these after Module 6.
+
+| # | Lesson | Project |
+|---|--------|---------|
+| 25 | React Router framework mode | Full-stack recipe book with server rendering and typed loaders |
+| 26 | Mobile apps with Expo and React Native | Habit tracker app for iOS and Android |
+| 27 | Desktop apps with Electron | Markdown notes app that reads and writes real files |
 
 ### Optional bonus modules
 Not required, but great once you've finished Module 4 or later.
@@ -155,7 +165,7 @@ Principles we follow:
 - Logic in hooks, presentation in components
 - Features only talk to each other through their public `index.ts`
 - Strict TypeScript, no `any`
-- Consistent naming and formatting enforced by ESLint and Prettier
+- Consistent naming and formatting enforced by a linter (Oxlint or ESLint) and Prettier
 
 Full details in [`docs/architecture.md`](docs/architecture.md).
 
@@ -176,7 +186,7 @@ npm install
 npm run dev
 ```
 
-**Requirements:** Node.js 20+, Git, a code editor (we recommend VS Code with the ESLint, Prettier, and Tailwind CSS IntelliSense extensions).
+**Requirements:** Node.js 22+ (the current LTS is best), Git, a code editor (we recommend VS Code with the Oxc or ESLint, Prettier, and Tailwind CSS IntelliSense extensions).
 
 New here? Read the full [Getting Started guide](docs/getting-started.md).
 
@@ -205,7 +215,7 @@ New here? Read the full [Getting Started guide](docs/getting-started.md).
 
 ## Tech stack
 
-React 19 · TypeScript · Vite · Tailwind CSS · React Router · TanStack Query · Zustand · React Hook Form · Zod · Vitest · React Testing Library · Next.js · ESLint · Prettier · GitHub Actions
+React 19 · TypeScript · Vite · Tailwind CSS · React Router · TanStack Query · Zustand · React Hook Form · Zod · Vitest · React Testing Library · MSW · Playwright · Next.js · Oxlint / ESLint · Prettier · GitHub Actions · Expo (optional) · Electron (optional)
 
 ---
 

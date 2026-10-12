@@ -60,7 +60,7 @@ Be kind and specific. A good review:
 
 - **TypeScript strict mode**, no `any`
 - **Function components** only
-- **ESLint and Prettier** must pass before you open a pull request
+- **The linter (Oxlint or ESLint) and Prettier** must pass before you open a pull request
 - One component per file, named in `PascalCase` (`ProductCard.tsx`)
 - Hooks start with `use` and are named in `camelCase` (`useLocalStorage.ts`)
 - Prefer small components with a single responsibility

@@ -160,13 +160,17 @@ Replace `../../../components/Button` with `@/components/Button`. Configure it in
 
 ```json
 // tsconfig.app.json
-{ "compilerOptions": { "baseUrl": ".", "paths": { "@/*": ["src/*"] } } }
+{ "compilerOptions": { "paths": { "@/*": ["./src/*"] } } }
 ```
 
 ```ts
 // vite.config.ts
-resolve: { alias: { '@': path.resolve(__dirname, 'src') } }
+import { fileURLToPath, URL } from 'node:url';
+
+resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } }
 ```
+
+Many older tutorials also set `"baseUrl": "."`. Don't: TypeScript 6 deprecated `baseUrl` and TypeScript 7 removed it. `paths` entries that start with `./` work on their own.
 
 If you use Vitest it picks up Vite's alias automatically. Inside a feature use **relative** imports for its own files (`./components/CartItem`) and the alias only for crossing boundaries. That makes it obvious what's local and what's external.
 
@@ -262,6 +266,8 @@ Conventions that only live in people's heads get broken. Make the tooling say no
 ```
 
 (An overriding config replaces earlier rule settings for the same rule, so combine patterns per file group carefully.)
+
+**Using Oxlint?** It supports `no-restricted-imports` too, in `.oxlintrc.json`. Use its `overrides` array (each with `files` and `rules`) for the per-folder rule. Its pattern options differ slightly from ESLint's, so check the [`no-restricted-imports` docs](https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-restricted-imports) for your version. If you need `eslint-plugin-boundaries`, you can run ESLint just for that plugin alongside Oxlint.
 
 ### More powerful tools
 

@@ -232,11 +232,14 @@ TypeScript infers most of these. The one you must write yourself is the element 
 
 ## 7. The React Compiler
 
-The React Compiler is a build-time tool that adds memoization **automatically** to your components when it can prove it's safe. With it enabled, you rarely write `useMemo`, `useCallback`, or `memo` by hand. Today:
+The React Compiler is a build-time tool that adds memoization **automatically** to your components when it can prove it's safe. It has been stable since version 1.0 (October 2025). With it enabled, you rarely write `useMemo`, `useCallback`, or `memo` by hand. Today:
 
-- It's opt-in. This repo's templates don't enable it.
+- It's opt-in. The Vite template doesn't enable it, because it slows down dev and build. Next.js has a `reactCompiler: true` option.
 - It requires following the Rules of React (pure render, no mutation of props or state). Good habits already.
 - Existing manual memoization keeps working.
+- In React DevTools, components the compiler optimized show a "Memo ✨" badge.
+
+Lesson 20 shows how to turn it on in a Vite project.
 
 So: learn what these hooks do (you'll meet them in lots of code), but reach for them **only when measurements show a problem**.
 

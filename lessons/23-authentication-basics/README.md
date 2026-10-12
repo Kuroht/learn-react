@@ -143,7 +143,7 @@ Authentication has many subtle failure modes: session fixation, timing attacks, 
 
 | Option | Notes |
 |--------|-------|
-| **Auth libraries** (Auth.js, Better Auth, and similar) | Live in your app, you own your data. Check which is actively maintained for your framework |
+| **Auth libraries** (Better Auth, and similar) | Live in your app, you own your data. Note: since September 2025 the Better Auth team also maintains **Auth.js** (formerly NextAuth.js) and recommends Better Auth for new projects. Auth.js gets security fixes but no big new features |
 | **Hosted auth** (Clerk, Auth0, Supabase Auth, Firebase Auth, WorkOS...) | Fastest and most featureful, with vendor dependence and cost |
 | **Your own** | Fine for learning (this lesson's project) and sometimes for simple needs, but treat it as a security-critical component |
 
@@ -200,18 +200,33 @@ export async function requireUser() {
 }
 ```
 
-(`cookies()` is async in newer Next.js versions. Check your version.)
+`cookies()` is async (you must `await` it) since Next.js 15. Never put `getCurrentUser` inside a `'use cache'` function: cached functions can't read cookies, and caching per-user auth results is a classic way to show one user's data to another.
 
 ### 2. Check in every protected page, layout *and* data function
 
 ```tsx
 // app/dashboard/page.tsx
-export default async function DashboardPage() {
-  const user = await requireUser();
+import { Suspense } from 'react';
+
+export default function DashboardPage() {
+  return (
+    <>
+      <h1>Your invoices</h1>
+      <Suspense fallback={<InvoiceListSkeleton />}>
+        <Invoices />
+      </Suspense>
+    </>
+  );
+}
+
+async function Invoices() {
+  const user = await requireUser();                   // reads cookies: request-time, inside Suspense
   const invoices = await getInvoicesFor(user.id);     // filtered by the user, in the query
   return <InvoiceList invoices={invoices} />;
 }
 ```
+
+With Cache Components (Lesson 22), anything that reads `cookies()` must sit inside `<Suspense>`. The heading and skeleton are in the static shell, which contains **no private data**, and the user's invoices stream in only after the check passes.
 
 Layouts don't re-run on every navigation between their children, so **don't rely on a layout alone** to protect pages. Check where data is read.
 
@@ -232,9 +247,9 @@ export async function deleteInvoice(id: string) {
 
 A Server Action is a public endpoint: **never** assume that only your UI can call it.
 
-### 4. Middleware / proxy as a *convenience*
+### 4. `proxy.ts` as a *convenience*
 
-A middleware (or its newer equivalent) can redirect unauthenticated users early for a better UX and block obvious cases cheaply. But it often can't do a full database check, it can be bypassed by misconfigured matchers, and framework bugs have existed in this area. **Never make it your only protection.** The server-side data checks above are the real guard.
+`proxy.ts` (called `middleware.ts` before Next.js 16) can redirect visitors without a session cookie early, for a better UX, and block obvious cases cheaply. But it usually only checks that a cookie *exists*, not that the session is valid. It can be bypassed by misconfigured matchers, and real framework vulnerabilities have existed in this area (for example a 2025 middleware-bypass CVE). **Never make it your only protection.** The server-side data checks above are the real guard.
 
 ### 5. Hide, don't protect, in the UI
 
@@ -325,7 +340,8 @@ The security bonus module has hands-on exercises for XSS and more.
 | Mistake | What happens |
 |---------|--------------|
 | Protecting only with a client-side redirect or hidden button | Anyone can call the API or open the URL |
-| Checking auth only in a layout or middleware | Bypassed via a direct data call or a matcher gap |
+| Checking auth only in a layout or `proxy.ts` | Bypassed via a direct data call or a matcher gap |
+| Caching per-user data with `'use cache'` without the user in the key | One user sees another user's data |
 | Server Actions without auth checks | Public endpoints that anyone can invoke |
 | Loading a record by id without checking the owner (IDOR) | Users read or edit others' data |
 | Storing the JWT in `localStorage` | Stolen by any XSS |

@@ -131,7 +131,7 @@ Install `web-vitals` and log LCP, INP, and CLS from your app. Interact with it a
 
 ## Exercise 11: Try the React Compiler
 
-Enable `babel-plugin-react-compiler` in a project where you wrote manual `memo`/`useCallback`.
+Enable the React Compiler (see "Enabling it in Vite" in the lesson) in a project where you wrote manual `memo`/`useCallback`.
 
 1. Check that the app still works
 2. Open React DevTools: components optimized by the compiler show a "Memo ✨" badge

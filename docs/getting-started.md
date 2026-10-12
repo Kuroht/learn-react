@@ -8,7 +8,7 @@ Everything you need to go from nothing to running your first lesson.
 
 | Tool | Version | Get it |
 |------|---------|--------|
-| Node.js | 20 or newer (LTS) | [nodejs.org](https://nodejs.org) |
+| Node.js | 22 or newer (the current LTS is best) | [nodejs.org](https://nodejs.org) |
 | Git | any recent version | [git-scm.com](https://git-scm.com) |
 | VS Code | latest | [code.visualstudio.com](https://code.visualstudio.com) |
 
@@ -22,7 +22,7 @@ git --version
 
 ### VS Code extensions
 
-- **ESLint**: shows lint errors as you type
+- **Oxc** or **ESLint**: shows lint errors as you type. New Vite projects use Oxlint (the Oxc extension). The lesson 01 to 03 starters use ESLint. Install the one your project uses, or both
 - **Prettier - Code formatter**: formats your code on save
 - **Tailwind CSS IntelliSense**: autocomplete for classes (needed from Lesson 07)
 
@@ -87,7 +87,7 @@ See [`CONTRIBUTING.md`](../CONTRIBUTING.md) for the branch and pull request rule
 
 ## Troubleshooting
 
-**`npm install` fails.** Check `node --version`. If it is lower than 20, update Node.
+**`npm install` fails.** Check `node --version`. If it is lower than 22, update Node.
 
 **Port 5173 is already in use.** Another dev server is running. Stop it, or Vite will pick the next free port and print it.
 
@@ -105,7 +105,7 @@ See [`CONTRIBUTING.md`](../CONTRIBUTING.md) for the branch and pull request rule
 |---------|--------------|
 | `npm run dev` | Start the dev server |
 | `npm run build` | Type-check and build for production |
-| `npm run lint` | Run ESLint |
+| `npm run lint` | Run the linter (Oxlint or ESLint, depending on the project) |
 | `git status` | See what changed |
 | `git checkout -b name/lesson-XX` | Start a new branch |
 | `git add . && git commit -m "message"` | Save your work |

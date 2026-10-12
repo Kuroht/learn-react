@@ -6,7 +6,9 @@
 
 **Prerequisite:** [Lesson 13](../13-custom-hooks/README.md)
 
-> **Last verified:** October 2026, with React Router v7. The API has changed a lot between versions and many tutorials are outdated. Check [reactrouter.com](https://reactrouter.com) if anything here doesn't match what you see. We use **data mode** (`createBrowserRouter`), not the framework mode with its own compiler.
+> **Last verified:** October 2026, with React Router 8 (8.4). The API has changed a lot between versions and many tutorials are outdated. Check [reactrouter.com](https://reactrouter.com) if anything here doesn't match what you see.
+>
+> React Router has three **modes**: *declarative* (`<BrowserRouter>` and `<Routes>`), *data* (`createBrowserRouter` with loaders and actions), and *framework* (a full-stack framework with file routes and server rendering). This lesson uses **data mode**. Framework mode is covered in the optional [Lesson 25](../25-react-router-framework-mode/README.md).
 
 ---
 
@@ -45,13 +47,14 @@ A client-side router changes the URL and swaps components **without reloading th
 npm install react-router
 ```
 
-In v7, everything comes from `react-router` (older code imports from `react-router-dom`; it still works as a re-export).
+React Router 8 needs Node 22+ and React 19.2+. Everything comes from the `react-router` package, and DOM-specific pieces like `RouterProvider` come from `react-router/dom`. The old `react-router-dom` package was **removed in v8**. If a tutorial tells you to install it, it's out of date.
 
 ```tsx
 // main.tsx
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 
@@ -242,7 +245,7 @@ async function postLoader({ params, request }: LoaderFunctionArgs): Promise<Post
 { path: 'posts/:postId', loader: postLoader, element: <PostPage />, errorElement: <PostError /> }
 
 function PostPage() {
-  const post = useLoaderData() as Post;
+  const post = useLoaderData<typeof postLoader>();
   return <article><h1>{post.title}</h1><p>{post.body}</p></article>;
 }
 ```
@@ -253,7 +256,7 @@ Benefits:
 - `request.signal` aborts when the user navigates away
 - Throwing a `Response` triggers the route's `errorElement`
 
-Types: `useLoaderData()` isn't typed from the loader in this mode, so assert the type (and keep the assertion next to the loader). Framework mode generates types, but that's outside this lesson.
+Types: pass the loader's type, `useLoaderData<typeof postLoader>()`, and React Router infers the return type from the loader. Without it you get `unknown`. Framework mode generates these types for you automatically (Lesson 25).
 
 ### Showing pending UI
 
@@ -367,7 +370,8 @@ With a client-side router, `/products/5` only exists inside your JavaScript. If 
 | No `*` route | Unknown URLs render a blank page |
 | Passing important data via `navigate` state | Lost on refresh or when sharing |
 | Using `navigate()` inside render | Side effect during render. Use `<Navigate>` or an effect |
-| Following a v5 or v6 tutorial (`Switch`, `component=`) | The API changed. Use the v7 docs |
+| Following a v5 or v6 tutorial (`Switch`, `component=`) | The API changed. Use the current docs |
+| Installing `react-router-dom` | Removed in v8. Install `react-router` and import `RouterProvider` from `react-router/dom` |
 | Refreshing a deep link on a static host and getting a 404 | Needs the SPA fallback |
 
 ---

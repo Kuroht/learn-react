@@ -232,7 +232,7 @@ Check that the file is in `.github/workflows/`, ends in `.yml` or `.yaml`, is va
 <details>
 <summary><code>npm ci</code> fails with "package-lock.json is out of sync"</summary>
 
-Run `npm install` locally, commit the updated lockfile. Make sure you use the same npm major version as CI (Node 22 ships a recent npm).
+Run `npm install` locally, commit the updated lockfile. Make sure you use the same npm major version as CI (Node 24 ships npm 11).
 </details>
 
 <details>

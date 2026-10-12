@@ -2,7 +2,7 @@
 
 Take your Lesson 12 shopping cart (or the Zustand version from Exercise 5 in Lesson 17) and give it a real test suite: unit tests for the logic, component tests for the UI, mocked network tests, and one end-to-end test.
 
-> **Last verified:** October 2026, with Vitest, React Testing Library 16, MSW 2, and Playwright. Check [vitest.dev](https://vitest.dev), [mswjs.io](https://mswjs.io), and [playwright.dev](https://playwright.dev) for the current setup.
+> **Last verified:** October 2026, with Vitest 5, React Testing Library 16, MSW 3, and Playwright. Vitest 5 and MSW 3 need Node 22+. Check [vitest.dev](https://vitest.dev), [mswjs.io](https://mswjs.io), and [playwright.dev](https://playwright.dev) for the current setup.
 
 ---
 
@@ -107,7 +107,7 @@ Test (using only `getByRole`, `getByLabelText`, `findBy…`, and `userEvent`):
 ## Stage 5: Mock the network with MSW
 
 - [ ] `src/test/server.ts` with handlers for `GET /api/products` and `POST /api/checkout`
-- [ ] Server lifecycle in `setup.ts` (`listen` with `onUnhandledRequest: 'error'`, `resetHandlers`, `close`)
+- [ ] Server lifecycle in `setup.ts` (`listen` with `onUnhandledFrame: 'error'`, `resetHandlers`, `close`). Import `http` and `HttpResponse` from `msw/http` (MSW 3)
 - [ ] Test the product list's loading state, success, empty, and server error (`server.use(...)` overrides)
 - [ ] Test checkout: success clears the cart and shows a confirmation; a 500 keeps the cart and shows an error
 - [ ] Assert that the request body sent to `POST /api/checkout` is correct (capture it in the handler)
@@ -204,7 +204,7 @@ All three should pass. No `any` in tests either (type your mocks).
 <details>
 <summary><code>describe</code>/<code>it</code>/<code>expect</code> aren't found by TypeScript</summary>
 
-Add `"types": ["vitest/globals", "@testing-library/jest-dom"]` to `compilerOptions` in the tsconfig that includes your `src` files, or import them explicitly: `import { describe, it, expect } from 'vitest'`.
+Add `"vitest/globals"` and `"@testing-library/jest-dom"` to the `types` array in the tsconfig that includes your `src` files, next to the existing `"vite/client"` (don't replace it). Or import them explicitly: `import { describe, it, expect } from 'vitest'`.
 </details>
 
 <details>

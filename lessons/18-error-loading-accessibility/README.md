@@ -53,7 +53,7 @@ npm install react-error-boundary
 ```tsx
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 
-function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+function ErrorFallback({ resetErrorBoundary }: FallbackProps) {
   return (
     <div role="alert" className="rounded border border-red-300 bg-red-50 p-4">
       <h2 className="font-semibold">Something went wrong</h2>
@@ -67,6 +67,8 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   <Dashboard />
 </ErrorBoundary>
 ```
+
+`FallbackProps` also includes `error`. In `react-error-boundary` v6 its type is **`unknown`**, not `Error`, because JavaScript lets you `throw` anything. Narrow it before you read it (`error instanceof Error ? error.message : ...`), or use the library's `getErrorMessage(error)` helper. The library also exports a `useErrorBoundary()` hook, whose `showBoundary(error)` sends an error from an event handler or async code to the nearest boundary.
 
 Guidelines:
 
@@ -82,14 +84,16 @@ Guidelines:
 - Errors in **async code** (`setTimeout`, promises)
 - Errors in the boundary itself, and during server rendering
 
-For those, use `try/catch`. If you want a boundary to catch an async error, give it to React during a state update:
+For those, use `try/catch`. If you want a boundary to show an async or event-handler error, use `react-error-boundary`'s hook:
 
 ```tsx
-const [, setState] = useState();
-fetchThing().catch((e) => setState(() => { throw e; }));
+import { useErrorBoundary } from 'react-error-boundary';
+
+const { showBoundary } = useErrorBoundary();
+fetchThing().catch(showBoundary);   // the nearest ErrorBoundary displays it
 ```
 
-(Libraries do this for you: TanStack Query's `throwOnError: true` or `useSuspenseQuery` rethrow into the nearest boundary.)
+(Data libraries do this for you: TanStack Query's `throwOnError: true` or `useSuspenseQuery` rethrow into the nearest boundary.)
 
 React 19 also adds root options `onCaughtError`, `onUncaughtError`, and `onRecoverableError` on `createRoot`, a central place to log errors.
 
@@ -332,7 +336,7 @@ When an item is removed, move focus somewhere sensible (the next item, or the li
 Automated tools catch about a third of issues. Use both:
 
 **Automated**
-- `eslint-plugin-jsx-a11y`: flags problems as you type (missing `alt`, bad roles, clickable divs)
+- `eslint-plugin-jsx-a11y`: flags problems as you type (missing `alt`, bad roles, clickable divs). Oxlint has the same rules built in: add `"jsx-a11y"` to `plugins` in `.oxlintrc.json`
 - Browser DevTools Accessibility pane and **Lighthouse**
 - **axe DevTools** browser extension: scan pages and see exactly what to fix
 - In tests: `jest-axe` / `vitest-axe` (Lesson 19), and Testing Library queries by role (`getByRole('button', { name: 'Save' })`) which double as a11y checks

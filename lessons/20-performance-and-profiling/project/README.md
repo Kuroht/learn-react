@@ -126,7 +126,7 @@ For each change, note in `PERFORMANCE.md`: the hypothesis, the result, and wheth
 
 ## Stage 7: Compare with the React Compiler
 
-- [ ] On a separate commit, enable `babel-plugin-react-compiler`
+- [ ] On a separate commit, enable the React Compiler with `reactCompilerPreset` and `@rolldown/plugin-babel` (see the lesson. The old `react({ babel: ... })` option was removed in `@vitejs/plugin-react` v6)
 - [ ] Revert your manual `memo`, `useCallback`, and `useMemo` (in a temporary branch) and measure. How close does the compiler get to your hand-tuned version?
 - [ ] Which optimizations did the compiler **not** replace (virtualization, transitions, bundle splitting, structure)?
 - [ ] Decide what you'd keep for the real app, and justify it in `PERFORMANCE.md`
