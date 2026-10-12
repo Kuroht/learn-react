@@ -2,7 +2,7 @@
 
 Build a Next.js dashboard with login, sessions, role-based access, and ownership checks. Then attack it yourself and write up what you found.
 
-> **Last verified:** October 2026. This project builds the core pieces by hand **for learning**. For a real product use a maintained auth library or service. Check the docs of Next.js ([`cookies`](https://nextjs.org/docs/app/api-reference/functions/cookies), middleware/proxy conventions) and of any library you choose.
+> **Last verified:** October 2026. This project builds the core pieces by hand **for learning**. For a real product use a maintained auth library or service. Check the docs of Next.js ([`cookies`](https://nextjs.org/docs/app/api-reference/functions/cookies), [`proxy.ts`](https://nextjs.org/docs/app/getting-started/proxy)) and of any library you choose. Written for Next.js 16.4 with Cache Components enabled.
 
 ---
 
@@ -103,7 +103,9 @@ In `features/auth/session.ts` (mark it `server-only`):
 - [ ] `/dashboard` and everything under it call `requireUser()` **in the page and in the data functions**, not only in the layout
 - [ ] `notes/queries.ts`: every query takes the current user and filters by `ownerId` in the database query itself
 - [ ] Logged-out visitors are redirected to `/login?next=...`
-- [ ] An optional `middleware`/proxy file redirects logged-out users away from `/dashboard` and `/admin` as a **convenience only**. Add a comment stating that the real checks are in the data layer
+- [ ] Components that call `getCurrentUser()`/`requireUser()` (they read cookies) are inside `<Suspense>`, so the static shell contains no private data
+- [ ] None of your `'use cache'` functions read cookies or return per-user data without the user id as an argument
+- [ ] An optional `proxy.ts` redirects visitors without a session cookie away from `/dashboard` and `/admin` as a **convenience only**. Add a comment stating that the real checks are in the data layer
 - [ ] Header shows the user's email and a logout button when logged in, "Log in" otherwise
 - [ ] Disabled users can't use existing sessions
 
@@ -261,9 +263,15 @@ Require the value to start with a single `/`, not `//` or `/\`, contain no schem
 </details>
 
 <details>
-<summary>My middleware blocks static files or loops</summary>
+<summary>My <code>proxy.ts</code> blocks static files or loops</summary>
 
-Use a `matcher` config that excludes `_next/static`, `_next/image`, and public assets, and make sure `/login` itself isn't protected.
+Use a `matcher` config that excludes `_next/static`, `_next/image`, and public assets, and make sure `/login` itself isn't protected. If you followed an older tutorial, check that the file is named `proxy.ts` (not `middleware.ts`) and exports a function called `proxy`.
+</details>
+
+<details>
+<summary>The dashboard shows a "blocking-route" error</summary>
+
+`requireUser()` reads cookies, which is request data. Put the component that calls it inside `<Suspense>` (with Cache Components on, that's required), and keep the page's heading and layout outside so they stay in the static shell.
 </details>
 
 ---

@@ -105,8 +105,8 @@ For a component that fetches `/api/users`:
 1. Set up MSW with a handler returning two users, and test that both appear
 2. Override the handler to return `500` and test the error message
 3. Override it to return `[]` and test the empty state
-4. Add a delayed response and check that the loading state shows first (`delay()` from MSW)
-5. Turn on `onUnhandledRequest: 'error'`. What happens if the component calls a URL you forgot to handle?
+4. Add a delayed response and check that the loading state shows first (`delay()` from `msw/utils/delay`)
+5. Turn on `onUnhandledFrame: 'error'` (called `onUnhandledRequest` before MSW 3). What happens if the component calls a URL you forgot to handle?
 
 ---
 

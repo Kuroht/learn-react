@@ -6,7 +6,7 @@
 
 **Prerequisite:** [Lesson 23](../23-authentication-basics/README.md)
 
-> **Last verified:** October 2026. Hosting platforms and GitHub Actions versions change often. The workflow examples pin major versions that existed when this was written. Check [docs.github.com/actions](https://docs.github.com/actions), [vercel.com/docs](https://vercel.com/docs), and [docs.netlify.com](https://docs.netlify.com) for the current syntax, and bump action versions to the latest major.
+> **Last verified:** October 2026, with `actions/checkout@v6`, `actions/setup-node@v6`, `actions/upload-artifact@v7`, and Node 24 (the current LTS). Hosting platforms and GitHub Actions versions change often. Dependabot (section 9) will open pull requests when new majors appear. Check [docs.github.com/actions](https://docs.github.com/actions), [vercel.com/docs](https://vercel.com/docs), and [docs.netlify.com](https://docs.netlify.com) for the current syntax, and bump action versions to the latest major.
 
 ---
 
@@ -90,11 +90,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - run: npm ci
@@ -130,10 +130,10 @@ jobs:
       run:
         working-directory: lessons/03-props-and-typescript/project/starter
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
           cache-dependency-path: lessons/03-props-and-typescript/project/starter/package-lock.json
       - run: npm ci
@@ -165,9 +165,9 @@ jobs:
 strategy:
   fail-fast: false
   matrix:
-    node: [20, 22]
+    node: [22, 24]
 steps:
-  - uses: actions/setup-node@v4
+  - uses: actions/setup-node@v6
     with: { node-version: '${{ matrix.node }}', cache: npm }
 ```
 
@@ -176,7 +176,7 @@ steps:
 - **Store artifacts** you want to inspect (test reports, Playwright traces, coverage):
 
 ```yaml
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   if: failure()
   with:
     name: playwright-report
@@ -257,7 +257,7 @@ Review the preview before merging: reviewers can click, not just read code.
 For servers you manage, a multi-stage build keeps images small:
 
 ```dockerfile
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -379,15 +379,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: { node-version: 24, cache: npm }
       - run: npm ci
       - run: npm run lint
       - run: npx tsc -b
       - run: npx vitest run --coverage
       - run: npm run build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist
@@ -398,13 +398,13 @@ jobs:
     needs: check
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: { node-version: 24, cache: npm }
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with: { name: playwright-report, path: playwright-report/ }
 ```
@@ -464,3 +464,4 @@ Deployment itself is usually done by the hosting platform's Git integration (so 
 1. Do the [exercises](exercises.md).
 2. Build the [project](project/README.md).
 3. Then start your **final project**: pick an idea, plan it together, and build it as a team using pull requests and code review (see the main [README](../../README.md)).
+4. Optional: continue with **Module 7, Beyond the browser**: [React Router framework mode](../25-react-router-framework-mode/README.md), [mobile apps with Expo](../26-mobile-apps-with-expo/README.md), and [desktop apps with Electron](../27-desktop-apps-with-electron/README.md).

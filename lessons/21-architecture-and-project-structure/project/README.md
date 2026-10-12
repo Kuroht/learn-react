@@ -232,6 +232,12 @@ Vitest reads `vite.config.ts` automatically (put the alias there, or use `vite-t
 </details>
 
 <details>
+<summary>TypeScript complains about <code>baseUrl</code></summary>
+
+`baseUrl` is deprecated in TypeScript 6 and removed in 7 (error TS5102). Delete it and write the paths relative to the tsconfig file: `"paths": { "@/*": ["./src/*"] }`.
+</details>
+
+<details>
 <summary><code>knip</code> reports false positives</summary>
 
 Add the entry files (`src/main.tsx`) and config files in `knip.json`, and mark intentional public exports. Review each report and don't blindly delete.

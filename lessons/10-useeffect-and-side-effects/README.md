@@ -67,7 +67,9 @@ function Title() {
 | `useEffect(fn, [])` | Only after the first render (when the component mounts) |
 | `useEffect(fn)` | After **every** render (rarely what you want) |
 
-**Rule:** list every reactive value (props, state, values computed from them) that the effect *reads*. The `react-hooks/exhaustive-deps` ESLint rule checks this for you. Never silence it. Fix the code instead.
+**Rule:** list every reactive value (props, state, values computed from them) that the effect *reads*. The `react-hooks/exhaustive-deps` ESLint rule (`react/exhaustive-deps` in Oxlint) checks this for you. Never silence it. Fix the code instead.
+
+> The current Vite template's Oxlint config doesn't turn this rule on. If you haven't already, add `"react/exhaustive-deps": "warn"` to `.oxlintrc.json` (see [Lesson 01](../01-setup/README.md#linting-oxlint-or-eslint)).
 
 ---
 

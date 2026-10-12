@@ -341,8 +341,29 @@ The React Compiler automatically memoizes components and hooks at build time. Wi
 
 - You write plain code, with no manual `useMemo`, `useCallback`, or `memo` in most cases
 - It works only on code that follows the **Rules of React** (pure render, no mutation of props/state, hooks at the top level)
-- It's opt-in. Install `babel-plugin-react-compiler` and add it to your Vite React plugin's Babel config (see [react.dev/learn/react-compiler](https://react.dev/learn/react-compiler))
-- `eslint-plugin-react-hooks` includes compiler-powered lint rules that flag code the compiler can't optimize
+- It's opt-in. Next.js has a `reactCompiler: true` config option. In Vite it takes a few steps (below)
+- `eslint-plugin-react-hooks` (v7+) includes compiler-powered lint rules that flag code the compiler can't optimize
+
+### Enabling it in Vite
+
+Since `@vitejs/plugin-react` v6 (the version used with Vite 8), the plugin no longer bundles Babel. The old `react({ babel: { plugins: [...] } })` setup from many tutorials **no longer works**. Use the preset with the Rolldown Babel plugin instead:
+
+```bash
+npm install -D babel-plugin-react-compiler @rolldown/plugin-babel @babel/core
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import babel from '@rolldown/plugin-babel';
+
+export default defineConfig({
+  plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
+});
+```
+
+This setup changes often, so compare it with the [plugin README](https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react) and [react.dev/learn/react-compiler/installation](https://react.dev/learn/react-compiler/installation) before you copy it.
 
 It reduces **unnecessary re-renders**, not the cost of rendering 10,000 rows or shipping megabytes of JavaScript. Everything else in this lesson still applies.
 

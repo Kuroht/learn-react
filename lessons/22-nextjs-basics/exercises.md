@@ -67,9 +67,11 @@ Navigate with `Link` and watch the Network tab. Is the layout re-fetched when yo
 Use `https://jsonplaceholder.typicode.com/posts`.
 
 1. Fetch the list in an `async` server component. No hooks, no effects
-2. Fetch a single post on `/blog/[slug]` (await `params` if your version needs it). Call `notFound()` for unknown ids
-3. Disable JavaScript in DevTools and reload. Does the content still appear? Compare with a Vite SPA
-4. View the page source. Is the data in the HTML?
+2. Render it from the page **without** a `Suspense` boundary. Read the blocking-route error in the dev overlay. What two fixes does it suggest?
+3. Fix it first with `<Suspense>`, then (in a second version) with `'use cache'` and `cacheLife('hours')` on the fetch function. What's the difference in what users see?
+4. Fetch a single post on `/blog/[slug]` (`await params`). Call `notFound()` for unknown ids
+5. Disable JavaScript in DevTools and reload. Does the content still appear? Compare with a Vite SPA
+6. View the page source. Is the data in the HTML?
 
 ---
 
@@ -127,7 +129,7 @@ A page needs `user` (200ms), `orders` (1s), and `recommendations` (2s).
 Build a "guestbook":
 
 1. A form with a name and a message
-2. A Server Action that validates with Zod, stores the entry in an in-memory array (or a JSON file), and calls `revalidatePath`
+2. A Server Action that validates with Zod, stores the entry in an in-memory array (or a JSON file), and refreshes the list. Cache the list with `'use cache'` + `cacheTag('guestbook')` and call `updateTag('guestbook')` in the action. What happens if you forget the `updateTag`?
 3. Use `useActionState` to show validation errors and a pending state
 4. Disable JavaScript and submit. Does it still work? Why?
 5. Call your action from `curl` or the browser's network tab. What does this tell you about how it must be secured?
@@ -147,9 +149,41 @@ Build a "guestbook":
 
 Run `npm run build`.
 
-1. Which routes are static and which are dynamic? Why?
-2. Make one route dynamic by reading `cookies()` or `searchParams`. Rebuild and compare
-3. Add `generateStaticParams` to the blog post page and rebuild. What changed?
+1. What does the build output say about each route's static shell?
+2. Read `cookies()` inside a small component on one page, wrapped in `Suspense`. Rebuild. Is the rest of the page still prerendered?
+3. Remove the `Suspense` around it. What does the build say?
+4. Add `generateStaticParams` to the blog post page and rebuild. What changed?
+
+---
+
+## Exercise 13: Spot the outdated tutorial
+
+Each snippet comes from an older Next.js tutorial. Say what's outdated in Next.js 16 with Cache Components, and rewrite it.
+
+```ts
+// a: middleware.ts
+export function middleware(req: NextRequest) { ... }
+
+// b
+export const dynamic = 'force-dynamic';
+
+// c
+const res = await fetch(url, { next: { revalidate: 60 } });
+
+// d
+revalidateTag('posts');
+
+// e
+export default function Page({ params }: { params: { id: string } }) {
+  return <h1>{params.id}</h1>;
+}
+```
+
+<details>
+<summary>Answers</summary>
+
+a) Rename the file to `proxy.ts` and the function to `proxy`. b) Not needed: everything is dynamic by default. Use `Suspense` for dynamic parts. c) Use a function with `'use cache'` and `cacheLife('minutes')` (or a custom profile). d) Use `updateTag('posts')` in a Server Action, or `revalidateTag('posts', 'max')`. e) `params` is a Promise: make the component async (or pass it to a child inside `Suspense`) and `await params`. Type it with `PageProps<'/route/[id]'>`.
+</details>
 
 ---
 
@@ -163,5 +197,7 @@ You're ready for the project if you can answer these without looking:
 - Where should `'use client'` go?
 - Can a client component import a server component? Can it receive one?
 - Why use `Promise.all` or Suspense for fetching?
+- What is the static shell, and why must uncached data or `cookies()` be inside `<Suspense>`?
+- What do `'use cache'`, `cacheLife`, and `cacheTag` do, and how do you refresh cached data after a mutation?
 - Why must Server Actions validate input and check authorization?
 - Which environment variables reach the browser?

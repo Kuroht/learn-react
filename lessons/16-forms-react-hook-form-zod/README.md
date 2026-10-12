@@ -191,6 +191,17 @@ The default is `onSubmit`.
 
 `valueAsNumber` turns the string into a number (empty becomes `NaN`, so pair it with a clear message), or use `z.coerce.number()` in the schema.
 
+**Coercion and transforms change the types.** With `z.coerce` or `.transform()`, the values the form holds (the schema's *input*) differ from the values `handleSubmit` gives you (its *output*). `@hookform/resolvers` v5 understands this. Give `useForm` both types, or let them be inferred from the resolver:
+
+```tsx
+type FormInput = z.input<typeof schema>;   // what the fields hold
+type FormOutput = z.output<typeof schema>; // what onSubmit receives
+
+const form = useForm<FormInput, unknown, FormOutput>({ resolver: zodResolver(schema) });
+```
+
+If you only use plain schemas (no coerce or transform), `useForm<z.infer<typeof schema>>` is enough.
+
 ---
 
 ## 4. Reading and controlling values

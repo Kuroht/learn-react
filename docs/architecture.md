@@ -88,23 +88,24 @@ Set up `@/` to point to `src/` so imports stay readable.
 ```json
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
+    "paths": { "@/*": ["./src/*"] }
   }
 }
 ```
 
+Don't add `baseUrl`. TypeScript 6 deprecated it and TypeScript 7 removed it. `paths` works without it, as long as each path starts with `./`.
+
 `vite.config.ts`:
 
 ```ts
-import path from 'node:path';
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: { '@': path.resolve(__dirname, 'src') },
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
 });
 ```

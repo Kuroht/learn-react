@@ -2,7 +2,7 @@
 
 Rebuild your Lesson 14 multi-page blog with the Next.js App Router, moving data fetching to the server and replacing your hand-written API code with server components and Server Actions.
 
-> **Last verified:** October 2026. Next.js evolves quickly. Check [nextjs.org/docs](https://nextjs.org/docs) for your installed version, especially for `params` typing, caching, and middleware/proxy conventions.
+> **Last verified:** October 2026, with Next.js 16.4 and **Cache Components enabled** (the `create-next-app` default). Next.js evolves quickly. Check [nextjs.org/docs](https://nextjs.org/docs) for your installed version. If your app was created without Cache Components, read the "previous model" caching guide instead of `'use cache'`.
 
 ---
 
@@ -30,7 +30,8 @@ Every stage ends with a **checkpoint**: something you should see in the browser.
 ```bash
 cd lessons/22-nextjs-basics/project
 npx create-next-app@latest starter
-# TypeScript: yes, ESLint: yes, Tailwind: yes, src/ directory: yes, App Router: yes
+# accept the recommended defaults: TypeScript, Tailwind, a linter, App Router, Cache Components
+# answer yes to the src/ directory
 cd starter
 npm run dev
 ```
@@ -47,7 +48,7 @@ src/
 │       ├── [postId]/page.tsx, not-found.tsx
 │       └── new/page.tsx
 ├── features/posts/
-│   ├── api.ts            # typed server-side fetch functions
+│   ├── data.ts           # typed server-side fetch functions ('use cache')
 │   ├── schemas.ts        # Zod schemas
 │   ├── actions.ts        # Server Actions ('use server')
 │   ├── types.ts
@@ -67,20 +68,22 @@ Work in your own branch: `git checkout -b yourname/lesson-22`
 - [ ] `metadata` with a title template (`%s | My Blog`) and a default description
 - [ ] Home and About pages as server components
 - [ ] A custom `not-found.tsx`
-- [ ] `npm run build` shows Home and About as **static**
+- [ ] Confirm `next.config.ts` has `cacheComponents: true`
+- [ ] `npm run build` shows Home and About as fully prerendered
 
-**Checkpoint:** navigation between pages is instant, and the build output marks the routes you expect as static.
+**Checkpoint:** navigation between pages is instant, and the build output shows the routes you expect as fully static.
 
 ---
 
 ## Stage 2: Typed server-side data
 
-In `features/posts/api.ts`:
+In `features/posts/data.ts`:
 
 - [ ] Zod schemas for `Post`, `Comment`, and `User` in `schemas.ts`, with types from `z.infer`
 - [ ] `getPosts({ page, q, userId })` returns `{ posts, total }` (read the `x-total-count` header), validated with Zod
 - [ ] `getPost(id)` returns `null` for a 404, and throws for other errors
 - [ ] `getComments(postId)` and `getUser(id)`
+- [ ] Each function starts with `'use cache'`, sets a `cacheLife` (posts: `'hours'`, comments: `'minutes'`), and tags its data with `cacheTag` (`'posts'`, `` `post-${id}` ``)
 - [ ] Add `import 'server-only'` so these can't be imported from client code
 
 **Checkpoint:** a scratch server component renders data from each function.
@@ -89,11 +92,12 @@ In `features/posts/api.ts`:
 
 ## Stage 3: The post list
 
-- [ ] `/posts` as an `async` server component reading `searchParams` (await it if your version requires it)
+- [ ] `/posts` page renders the heading and the search form right away (static shell), and passes the `searchParams` **promise** to a `PostResults` component inside `<Suspense>`
+- [ ] `PostResults` awaits `searchParams` and calls the cached `getPosts`
 - [ ] Validate `page`, `q`, and `userId` (never trust the URL): invalid values fall back to defaults
 - [ ] A search form using `<form action="/posts" method="get">` (works without JavaScript!) with the author select
 - [ ] Pagination with `Link`s that preserve the other params
-- [ ] `loading.tsx` with a skeleton that matches the layout
+- [ ] A skeleton fallback that matches the layout
 - [ ] An empty state: "No posts match your search"
 - [ ] The result count is announced in a `role="status"` region
 
@@ -134,7 +138,7 @@ Add interactivity **only where needed**:
 - [ ] `/posts/new` with a form (title, body, author)
 - [ ] `createPost` in `actions.ts` (`'use server'`): parse `FormData` with Zod, return field errors, and "create" the post (`POST` to JSONPlaceholder, which fakes it, or write to a local JSON file)
 - [ ] The form is a client component using `useActionState`, with field-level errors and a pending state (`useFormStatus` in the submit button)
-- [ ] On success, `revalidatePath('/posts')` and `redirect('/posts')`
+- [ ] On success, `updateTag('posts')` (so the list shows the new post immediately) and `redirect('/posts')`
 - [ ] Submitting with JavaScript disabled still works
 - [ ] **Security:** the action checks that the user is allowed to post. For now, add a simple placeholder `requireUser()` (Lesson 23 makes it real)
 
@@ -191,6 +195,7 @@ Both should pass. No `any`.
 - [ ] Server components fetching data (no `useEffect` fetching)
 - [ ] Zod-validated data and validated search params
 - [ ] Parallel fetching and a `Suspense` boundary for comments
+- [ ] Cached data functions with `'use cache'`, `cacheLife`, and `cacheTag`, and no blocking-route errors in dev or build
 - [ ] Dynamic metadata with `generateMetadata`
 - [ ] At least one Server Action with validation, pending state, and revalidation
 - [ ] Small client islands. `'use client'` only where needed
@@ -203,7 +208,8 @@ Both should pass. No `any`.
 
 - [ ] Comments form with a Server Action and optimistic UI (`useOptimistic`)
 - [ ] Route handler `/api/health`
-- [ ] Incremental revalidation (time-based or tag-based) for the post list
+- [ ] A `proxy.ts` that redirects `/blog/*` to `/posts/*` (old URLs)
+- [ ] `export const ensureStatic = 'navigation'` on the About page, then try to add something dynamic and read the build error
 - [ ] Parallel/intercepting route for a post preview modal
 - [ ] Tests for the Zod schemas and the action (Lesson 19)
 - [ ] Internationalization of the site
@@ -221,19 +227,25 @@ A server component (or something it imports) uses a hook, an event handler, or a
 <details>
 <summary><code>params</code> must be awaited</summary>
 
-In newer Next.js versions `params` and `searchParams` are Promises. Make the component `async` and `const { postId } = await params;`. Type it as `Promise<{ postId: string }>`.
+`params` and `searchParams` are Promises. Type the page with the generated helper `PageProps<'/posts/[postId]'>`, and `await params` inside an async component that sits in a `Suspense` boundary.
+</details>
+
+<details>
+<summary>"Uncached data was accessed outside of &lt;Suspense&gt;" / blocking-route error</summary>
+
+A component fetched data, awaited `params`/`searchParams`, or read `cookies()` without being inside `<Suspense>` and without `'use cache'`. Either wrap that component in `<Suspense fallback={...}>`, or cache the data function with `'use cache'`. Move the `await` as deep into the tree as you can so the rest of the page stays in the static shell.
 </details>
 
 <details>
 <summary>My data doesn't refresh after the Server Action</summary>
 
-Call `revalidatePath('/posts')` (or the tag you used) in the action, and `redirect` after it. Remember `redirect` throws internally, so call it outside a `try/catch`.
+The list is cached. Call `updateTag('posts')` in the action (matching the `cacheTag('posts')` in your data function), then `redirect`. Remember `redirect` throws internally, so call it outside a `try/catch`. `revalidateTag` now needs a second argument (`revalidateTag('posts', 'max')`) and serves stale data while refreshing, which is why `updateTag` is better right after a form.
 </details>
 
 <details>
 <summary>Hydration mismatch error</summary>
 
-Server and client rendered different HTML, for example from `Date.now()`, `Math.random()`, `window` checks, or locale-dependent formatting. Move that into an effect in a client component, or format the value on the server consistently.
+Server and client rendered different HTML, for example from `Date.now()`, `Math.random()`, `window` checks, or locale-dependent formatting. Move that into an effect in a client component, or format the value on the server consistently. On the server, Next.js also asks you to call `await connection()` (inside `Suspense`) before using random values or the current time, or to cache them.
 </details>
 
 <details>

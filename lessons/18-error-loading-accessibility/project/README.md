@@ -133,7 +133,7 @@ Add screenshots for the worst problems.
 
 ## Stage 8: Lock it in
 
-- [ ] Add `eslint-plugin-jsx-a11y` rules to the ESLint config and fix everything they report
+- [ ] Add the jsx-a11y rules to your linter (`eslint-plugin-jsx-a11y` for ESLint, or the built-in `jsx-a11y` plugin in `.oxlintrc.json`) and fix everything they report
 - [ ] (Optional, ahead of Lesson 19) add one `vitest-axe` or `jest-axe` test per main screen
 - [ ] Write `ACCESSIBILITY.md`: the conventions the project follows (focus styles, error pattern, dialog pattern, announcements) so the next contributor keeps them
 - [ ] Add a **PR checklist item** for accessibility to `.github/PULL_REQUEST_TEMPLATE.md` if you are contributing it back

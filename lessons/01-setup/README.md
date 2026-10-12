@@ -41,7 +41,7 @@ That function is a component. You will write hundreds of them.
 ## 2. Install the tools
 
 ### Node.js
-React tooling runs on Node.js. Install version **20 or newer** from [nodejs.org](https://nodejs.org) (the LTS version is fine).
+React tooling runs on Node.js. Install the current **LTS** version from [nodejs.org](https://nodejs.org) (Node 24 when we last checked). Some tools used later in the course (React Router 8, Vitest 5, MSW 3) need **Node 22 or newer**, so don't use anything older.
 
 Check it worked:
 
@@ -61,7 +61,7 @@ git config --global user.email "you@example.com"
 ### Editor
 We recommend [VS Code](https://code.visualstudio.com) with these extensions:
 
-- ESLint
+- Oxc (for Oxlint) or ESLint, depending on which linter your project uses (see [Linting](#linting-oxlint-or-eslint) below)
 - Prettier
 - Tailwind CSS IntelliSense (used from Lesson 07)
 
@@ -115,7 +115,32 @@ It finds the `<div id="root">` in `index.html` and tells React to render your ap
 | `npm run dev` | Start the dev server |
 | `npm run build` | Type-check and create a production build |
 | `npm run preview` | Preview the production build locally |
-| `npm run lint` | Run ESLint |
+| `npm run lint` | Run the linter (Oxlint in new projects, ESLint in older ones) |
+
+### Linting: Oxlint or ESLint
+
+A **linter** reads your code and flags mistakes and risky patterns, like a hook called inside an `if`.
+
+- The current Vite template uses **[Oxlint](https://oxc.rs/docs/guide/usage/linter)**, a very fast linter written in Rust. Its settings live in `.oxlintrc.json`.
+- Older projects, including the starters in lessons 01 to 03 of this repo, use **ESLint**, with settings in `eslint.config.js`.
+
+Both are fine, and they use the same rule names. When a lesson says "the `react-hooks/exhaustive-deps` ESLint rule", the Oxlint equivalent is `react/exhaustive-deps`.
+
+The Vite template's Oxlint config only turns on a couple of React rules. Add the hooks dependency check now, because you'll rely on it from Lesson 10:
+
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  }
+}
+```
+
+If a rule name is rejected, run `npx oxlint --rules` to list the names your version supports.
 
 ---
 

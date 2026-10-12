@@ -6,7 +6,7 @@
 
 **Prerequisite:** [Lesson 18](../18-error-loading-accessibility/README.md)
 
-> **Last verified:** October 2026, with Vitest, React Testing Library 16, and MSW 2. Tooling versions move quickly. Check [vitest.dev](https://vitest.dev), [testing-library.com/docs/react-testing-library/intro](https://testing-library.com/docs/react-testing-library/intro), and [mswjs.io](https://mswjs.io) if anything here doesn't match what you see.
+> **Last verified:** October 2026, with Vitest 5, React Testing Library 16, MSW 3, and Playwright 1.6x. Vitest 5 (September 2026) and MSW 3 (September 2026) both need **Node 22+** and changed some APIs, so tutorials written before then may not work as written. Tooling versions move quickly. Check [vitest.dev](https://vitest.dev), [testing-library.com/docs/react-testing-library/intro](https://testing-library.com/docs/react-testing-library/intro), and [mswjs.io](https://mswjs.io) if anything here doesn't match what you see.
 
 ---
 
@@ -40,7 +40,7 @@ But tests cost time to write and maintain. Test **behavior that matters**, not e
 
 | Type | What | Speed | Confidence |
 |------|------|-------|------------|
-| Static | TypeScript, ESLint | Instant | Catches typos and type errors |
+| Static | TypeScript, a linter (Oxlint or ESLint) | Instant | Catches typos and type errors |
 | Unit | Pure functions, reducers, hooks | Very fast | Logic is right |
 | **Integration / component** | A component with its children, state, and (mocked) network | Fast | The UI works for users |
 | End-to-end | A real browser against a running app | Slow | The whole system works |
@@ -80,7 +80,13 @@ import { cleanup } from '@testing-library/react';
 afterEach(() => cleanup());
 ```
 
-Add `"test": "vitest"` to `package.json` scripts, and add `"types": ["vitest/globals", "@testing-library/jest-dom"]` to `tsconfig.app.json`'s `compilerOptions` so `describe`, `it`, and `expect` type-check.
+Add `"test": "vitest"` to `package.json` scripts. Then extend the `types` list in `tsconfig.app.json`'s `compilerOptions` so `describe`, `it`, and `expect` type-check. **Keep `vite/client`** that the template already lists:
+
+```json
+"types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"]
+```
+
+(Since TypeScript 6, `types` defaults to an empty list, so a type package only loads if it's listed here.)
 
 - **Vitest** runs tests. It reuses your Vite config, so imports, aliases, and TypeScript just work, and it's very fast in watch mode.
 - **jsdom** simulates a browser DOM in Node.
@@ -244,7 +250,9 @@ it('shows an error for an invalid email', async () => {
 });
 ```
 
-`vi.fn()` creates a mock function you can inspect (`toHaveBeenCalledTimes`, `toHaveBeenCalledWith`).
+`vi.fn()` creates a mock function you can inspect (`toHaveBeenCalledTimes`, `toHaveBeenCalledWith`). Since Vitest 5, mock call history is **cleared automatically before every test**, so a call count never leaks from one test into the next.
+
+Also new in Vitest 5: an async assertion you forget to `await` (`expect(promise).resolves...`) now **fails the test** instead of passing silently.
 
 ---
 
@@ -259,7 +267,7 @@ npm install -D msw
 ```ts
 // src/test/server.ts
 import { setupServer } from 'msw/node';
-import { http, HttpResponse } from 'msw';
+import { http, HttpResponse } from 'msw/http';
 
 export const handlers = [
   http.get('https://api.example.com/todos', () =>
@@ -273,10 +281,21 @@ export const server = setupServer(...handlers);
 ```ts
 // src/test/setup.ts (add)
 import { server } from './server';
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 ```
+
+**MSW 3 changes** (September 2026), in case you see older examples:
+
+| MSW 2 | MSW 3 |
+|-------|-------|
+| `import { http, HttpResponse } from 'msw'` | `import { http, HttpResponse } from 'msw/http'` |
+| `import { delay } from 'msw'` | `import { delay } from 'msw/utils/delay'` |
+| `onUnhandledRequest: 'error'` | `onUnhandledFrame: 'error'` |
+| Node 18+ | Node 22+, ESM only |
+
+Run `npx codemod @mswjs/v3` to migrate an existing project automatically. MSW 3 also no longer patches timers: if you use fake timers, advance them yourself for a `delay()` to resolve.
 
 Test the happy path, and **override** the handler for failures:
 

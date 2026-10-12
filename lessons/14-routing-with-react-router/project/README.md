@@ -2,7 +2,7 @@
 
 Build a blog with a post list, search and pagination in the URL, post pages with comments, a category filter, and a custom 404.
 
-> **Last verified:** October 2026, with React Router v7. Check [reactrouter.com](https://reactrouter.com) for the current API.
+> **Last verified:** October 2026, with React Router 8. Check [reactrouter.com](https://reactrouter.com) for the current API. Install `react-router` only (`react-router-dom` no longer exists in v8).
 
 ---
 
